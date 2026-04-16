@@ -13,27 +13,33 @@ If you get some trouble with installation during installation, you can access to
 
 ---
 
+## Access to Proxmox via Browser:
+
+`https://192.168.xx.xx:8006`
+
+---
+
 ## To verify from Proxmox Shell:
 
-1) Hard Disk:
+1. Hard Disk:
 
 `$ lsblk`
 
 `$ df -h /`
 
-2) Voir toutes les interfaces réseau
+2. Voir toutes les interfaces réseau
 
 `ip link show`
 
-3) Display network bridges
+3. Display network bridges
 
 `brctl show`
 
-# 3. Voir la configuration réseau de Proxmox
+4. Voir la configuration réseau de Proxmox
 
 `cat /etc/network/interfaces`
 
-# 4. Lister tous les stockages configurés
+5. Lister tous les stockages configurés
 
 `pvesm status`
 
@@ -41,9 +47,9 @@ If you get some trouble with installation during installation, you can access to
 
 ## Create CT with LXC :
 
-click pve -> Create CT -> configuration
+- Click pve -> Create CT -> configuration
 
-CT 100 - pwd - 1 CPU - 8 - 1024 RAM - 512 SWAP - DNS empty
+- CT 100 - pwd (& confirmed) - 1 CPU - 8 - 1024 RAM - 512 SWAP - DNS empty
 
 ## Verify from pve node Shell:
 
@@ -63,9 +69,25 @@ CT 100 - pwd - 1 CPU - 8 - 1024 RAM - 512 SWAP - DNS empty
 
 `pct exec 100 -- bash -c "apt update && apt upgrade -y"`
 
-⚠️ Don't use dist-upgrade ⚠️
+`pct exec 100 -- bash -c "apt update && apt upgrade -y && apt autoremove -y"`
+
+⚠️ Don't use dist-upgrade into a CT ⚠️
 
 `pct reboot 100`
+
+---
+
+## Clone
+
+Le conteneur doit être arrêté pour un clone cohérent (sinon le clone peut être dans un état inconsistants)
+
+`pct clone 101 102`
+
+Si le conteneur doit être utilisé en production de manière indépendante : préférez pct clone --full 1 pour éviter toute dépendance avec l'original
+
+`pct clone 101 102 --full 1`
+
+`pct clone 101 102 --hostname mon-nouveau-conteneur`
 
 ---
 
@@ -83,21 +105,21 @@ Your terminal
     │
     └── $ pct push 100 ... ─► From Host Proxmox
 
-# Toujours dans le conteneur (pct enter 100)
+1) Toujours dans le conteneur (pct enter 100)
 
 `apt update`
 
 `apt install openssh-server -y`
 
-Set SSH config at first and change root after !
+- Set SSH config at first and change root after !
 
 `ssh-keygen -t ed25519 -C "votre-email@exemple.com"`
 
-From pve node shell :
+- From pve node shell :
 
 `pct push 100 ~/.ssh/id_ed25519.pub /root/.ssh/authorized_keys`
 
-si echec
+If failed:
 
 `pct enter 100`
 
@@ -111,7 +133,7 @@ If it's ok:
 
 `nano /etc/ssh/sshd_config`
 
-(dans pct 100)
+(into pct 100)
 
 ```
 PermitRootLogin prohibit-password
@@ -119,31 +141,35 @@ PasswordAuthentication no
 PubkeyAuthentication yes
 ChallengeResponseAuthentication no
 ```
-(dans pct 100)
+
+`cat /root/.ssh/id_ed25519.pub >> /root/.ssh/authorized_keys`
 
 `systemctl restart sshd`
 
-`systemctl enable sshd`
+`systemctl enable sshd.service`
 
 `systemctl start sshd`
 
-`systemctl status sshd`  # Vérifier que c'est "active (running)"
+`systemctl status sshd`
 
-# Sortez du conteneur (Ctrl+D ou "exit")
+2) Sortez du conteneur (Ctrl+D ou "exit")
 
-# Puis depuis l'hôte Proxmox :
+Puis depuis l'hôte Proxmox :
 
-`pct push 100 ~/.ssh/id_ed25519.pub /root/.ssh/authorized_keys`
+not sur `pct push 100 ~/.ssh/id_ed25519.pub /root/.ssh/authorized_keys`
 
-# Depuis votre machine personnelle ou l'hôte Proxmox
+ok `pct push 100 /root/.ssh/id_rsa.pub /root/.ssh/authorized_keys`
 
-`ssh root@IP_DU_CONTENEUR_100`
-
-# Depuis le shell de l'hôte Proxmox (en root)
+- Depuis votre machine personnelle ou l'hôte Proxmox
 
 `ssh root@IP_DU_CONTENEUR_100`
 
-Méthode 3 : En "jump host" depuis votre machine personnelle (la plus élégante)
+- Depuis votre serveur Proxmox (pas depuis la session SSH)
+
+`ssh-keygen -lf /etc/ssh/ssh_host_ed25519_key.pub`
+
+
+3) En "jump host" depuis votre machine personnelle (la plus élégante)
 
 Configurez votre fichier ~/.ssh/config sur votre machine personnelle :
 
@@ -174,25 +200,23 @@ bash
 
 `pct enter 100`
 
-# 1. SSH est-il installé ?
+1. SSH est-il installé ?
 
 systemctl status sshd
 
-# 2. SSH écoute-t-il sur le bon port ?
+2. SSH écoute-t-il sur le bon port ?
 
 netstat -tlnp | grep :22
 
-# ou
+OR
 
 ss -tlnp | grep sshd
 
-# 3. Le pare-feu bloque-t-il ?
+3. Le pare-feu bloque-t-il ?
 
 iptables -L -n | grep :22
 
-# (si vous utilisez iptables)
-
-# 4. Vérifier la configuration SSH
+4. Vérifier la configuration SSH
 
 `grep -E "PermitRootLogin|PasswordAuthentication|PubkeyAuthentication" /etc/ssh/sshd_config`
 
@@ -211,6 +235,49 @@ Votre machine personnelle
                     └─ pct enter 100 (accès root absolu)
 
 ```
+---
 
-# Change ROOT PWD:
+## Add user ✅
 
+`pct enter 100`
+
+1) Créer un utilisateur (ex: monuser)
+
+`adduser monuser`
+
+2) Ajouter aux sudoers
+
+`usermod -aG sudo monuser  # Pour Debian/Ubuntu`
+
+or
+
+`usermod -aG wheel monuser  # Pour certaines distributions`
+
+
+3) From pve node shell:
+
+`pct push 100 /root/.ssh/id_rsa.pub /home/monuser/.ssh/authorized_keys`
+
+Ou depuis l'intérieur du CT
+
+`pct enter 100`
+
+`mkdir -p /home/monuser/.ssh`
+
+`cat /root/.ssh/authorized_keys >> /home/monuser/.ssh/authorized_keys`
+
+`chown -R monuser:monuser /home/monuser/.ssh`
+
+`chmod 600 /home/monuser/.ssh/authorized_keys`
+
+`ssh monuser@192.168.XX.XX`
+
+Deactivate ssh root:
+
+`nano /etc/ssh/sshd_config`
+
+```
+PermitRootLogin no
+```
+
+`systemctl restart ssh`
