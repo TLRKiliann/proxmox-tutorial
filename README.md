@@ -47,6 +47,8 @@ If you get some trouble with installation during installation, you can access to
 
 ## Create CT with LXC :
 
+- install template => debian 12 (bookworm)
+
 - Click pve -> Create CT -> configuration
 
 - CT 100 - pwd (& confirmed) - 1 CPU - 8 - 1024 RAM - 512 SWAP - DNS empty
@@ -88,6 +90,23 @@ Si le conteneur doit être utilisé en production de manière indépendante : pr
 `pct clone 101 102 --full 1`
 
 `pct clone 101 102 --hostname mon-nouveau-conteneur`
+
+---
+
+## UFW firewall installation
+
+```
+apt install ufw -y 
+
+ufw default deny incoming
+ufw default allow outgoing
+
+ufw allow 22/tcp   # SSH
+ufw allow 80/tcp   # HTTP
+ufw allow 443/tcp  # HTTPS
+
+ufw enable
+```
 
 ---
 
