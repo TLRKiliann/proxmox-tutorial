@@ -19,7 +19,7 @@
 
 I've choose Ventoy to flash my USB key with Proxmox ISO (last one).
 
-If you get some trouble with installation during installation, you can access to GRUB by pressing key "e" to add nomodeset at the end of linux line.
+If you get some trouble with installation during installation, you can access to GRUB by pressing key "e" to add `nomodeset` at the end of linux line.
 
 (options -> target disk)
 
@@ -54,7 +54,11 @@ If you get some trouble with installation during installation, you can access to
 
 `cat /etc/network/interfaces`
 
-5. Lister tous les stockages configurés
+5. Vérifiez la configuration réseau depuis le nœud Proxmox pour CT-101
+
+`cat /etc/pve/lxc/101.conf`
+
+6. Lister tous les stockages configurés
 
 `pvesm status`
 
@@ -117,13 +121,23 @@ En résumé : VM = isolation et compatibilité OS / CT = légèreté et performa
 
 `pct start 100`
 
+`pct status 100`
+
 `pct list`
 
 `pct enter 100`
 
+`pct reboot 100`
+
 ## Update CT
 
 `pct enter 100`
+
+ip
+
+`pct exec 100 -- ip a`
+
+update
 
 `pct exec 100 -- apt update`
 
@@ -135,6 +149,7 @@ En résumé : VM = isolation et compatibilité OS / CT = légèreté et performa
 
 `pct reboot 100`
 
+⚠️ Don't use reboot into a CT ⚠️
 
 Mises à jour automatisées : Un script (proxmox-ct-updater) peut gérer les mises à jour de tous vos CT selon un planning (par exemple, tous les 1ers du mois), en générant des logs détaillés .
 
@@ -198,6 +213,8 @@ ufw allow 80/tcp   # HTTP
 ufw allow 443/tcp  # HTTPS
 
 ufw enable
+
+ufw status verbose
 ```
 
 [⬆-up!](#proxmox-ve-tutorial)
@@ -208,6 +225,7 @@ ufw enable
 
 CT are only accessible by SSH connection.
 
+```
 Your terminal
     │
     ├── $ pct enter 100 ──► DANS le conteneur
@@ -217,6 +235,7 @@ Your terminal
     │       └── exit
     │
     └── $ pct push 100 ... ─► From Host Proxmox
+```
 
 1) Toujours dans le conteneur (pct enter 100)
 
@@ -265,13 +284,15 @@ ChallengeResponseAuthentication no
 
 `systemctl status sshd`
 
+`systemctl status ssh.socket`
+
+normaly enable
+
 2) Sortez du conteneur (Ctrl+D ou "exit")
 
 Puis depuis l'hôte Proxmox :
 
-not sur `pct push 100 ~/.ssh/id_ed25519.pub /root/.ssh/authorized_keys`
-
-ok `pct push 100 /root/.ssh/id_rsa.pub /root/.ssh/authorized_keys`
+`pct push 100 /root/.ssh/id_rsa.pub /root/.ssh/authorized_keys`
 
 - Depuis votre machine personnelle ou l'hôte Proxmox
 
@@ -282,7 +303,7 @@ ok `pct push 100 /root/.ssh/id_rsa.pub /root/.ssh/authorized_keys`
 `ssh-keygen -lf /etc/ssh/ssh_host_ed25519_key.pub`
 
 
-3) En "jump host" depuis votre machine personnelle (la plus élégante)
+1) En "jump host" depuis votre machine personnelle (la plus élégante)
 
 Configurez votre fichier ~/.ssh/config sur votre machine personnelle :
 
