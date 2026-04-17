@@ -4,6 +4,7 @@
   - [Installation](#installation)
   - [Access to Proxmox via Browser](#access-to-proxmox-via-browser)
   - [To verify from Proxmox Shell](#to-verify-from-proxmox-shell)
+  - [VM or CT ?](#vm-or-ct-)
   - [Create CT with LXC](#create-ct-with-lxc)
   - [Verify from pve node Shell](#verify-from-pve-node-shell)
   - [Update CT](#update-ct)
@@ -61,7 +62,48 @@ If you get some trouble with installation during installation, you can access to
 
 ---
 
+## VM or CT ?
+
+Quand utiliser une VM ?
+
+    Besoin d’exécuter Windows ou un autre OS non Linux.
+
+    Exigence d’isolation très stricte (sécurité, multi-locataire critique).
+
+    Application nécessitant son propre noyau personnalisé ou modules kernel spécifiques.
+
+    Migration depuis un environnement VMware/Hyper-V.
+
+Quand utiliser un CT (conteneur LXC) ?
+
+    Service Linux pur (web, base de données, cache, DNS, etc.).
+
+    Recherche de haute densité (faire tourner des dizaines de conteneurs sur un même hôte).
+
+    Démarrage ultra-rapide ou mise à l’échelle dynamique.
+
+    Accès direct aux périphériques matériels avec moins de latence.
+
+    ⚠️ Attention : Un CT partage le noyau de l’hôte → une faille d’élévation de privilèges dans le conteneur pourrait potentiellement affecter l’hôte ou d’autres CT. Les VM sont plus sûres à ce niveau.
+
+En résumé : VM = isolation et compatibilité OS / CT = légèreté et performance Linux.
+
+[⬆-up!](#proxmox-ve-tutorial)
+
 ## Create CT with LXC
+
+| **Utilisez un CT si...** | **Utilisez une VM si...** |
+|:--------------------------|:---------------------------|
+| Vous voulez un service **léger** qui démarre en quelques secondes. | Vous avez besoin d'**isolation** et de sécurité maximale (ex: serveur exposé sur internet). |
+| Vous voulez héberger une **application unique** (Pi-hole, Jellyfin, un serveur web). | Vous voulez utiliser un **autre noyau** (ex: un noyau custom ou un OS comme Windows ou FreeBSD). |
+| Vous avez des **ressources limitées** (mémoire, CPU) et voulez en utiliser le moins possible. | Vous voulez **passer du matériel** (GPU, clé USB) simplement et de manière fiable. |
+| Vous voulez **tester** une application rapidement et pouvoir la supprimer ou la cloner facilement. | Vous voulez déployer des environnements **Docker complexes** (préférez une VM Debian/Ubuntu dédiée). |
+
+- Pas de live-migration : Contrairement aux VMs, un CT ne peut pas être migré "à chaud" (sans l'éteindre) vers un autre nœud d'un cluster Proxmox.
+
+- Périphériques matériels : Passer du matériel spécifique (comme une clé USB ou une carte GPU) à un CT est plus complexe que pour une VM et nécessite souvent une configuration manuelle avancée (passerelle de périphériques)
+
+*** CT LXC: ***
 
 - install template => debian 12 (bookworm)
 
@@ -92,6 +134,36 @@ If you get some trouble with installation during installation, you can access to
 ⚠️ Don't use dist-upgrade into a CT ⚠️
 
 `pct reboot 100`
+
+
+Mises à jour automatisées : Un script (proxmox-ct-updater) peut gérer les mises à jour de tous vos CT selon un planning (par exemple, tous les 1ers du mois), en générant des logs détaillés .
+
+`proxmox-ct-updater`
+
+```
+sudo install -m 755 scripts/proxmox-ct-update.sh /usr/local/sbin/proxmox-ct-update.sh
+sudo /usr/local/sbin/proxmox-ct-update.sh
+```
+
+Vous pouvez relancer l'assistant à tout moment pour modifier les paramètres cron :
+
+`sudo /usr/local/sbin/proxmox-ct-update.sh --configure`
+
+Ou réinstaller la planification sans repasser par l'assistant :
+
+`sudo /usr/local/sbin/proxmox-ct-update.sh --install`
+
+`cat /etc/cron.d/proxmox-ct-update`
+
+return
+
+`0 2 1 * * root /usr/local/sbin/proxmox-ct-update.sh`
+
+with cron
+
+`bash -c "$(wget -qLO - https://github.com/community-scripts/ProxmoxVE/raw/main/tools/pve/update-lxcs-cron.sh)"`
+
+`crontab -l`
 
 [⬆-up!](#proxmox-ve-tutorial)
 
@@ -243,19 +315,19 @@ bash
 
 1. SSH est-il installé ?
 
-systemctl status sshd
+`systemctl status sshd`
 
 2. SSH écoute-t-il sur le bon port ?
 
-netstat -tlnp | grep :22
+`netstat -tlnp | grep :22`
 
 OR
 
-ss -tlnp | grep sshd
+`ss -tlnp | grep sshd`
 
 3. Le pare-feu bloque-t-il ?
 
-iptables -L -n | grep :22
+`iptables -L -n | grep :22`
 
 4. Vérifier la configuration SSH
 
@@ -469,22 +541,22 @@ vrrp_script check_website {
 
 Ainsi, si votre serveur web plante, Keepalived basculera automatiquement sur l'autre CT.
 
-
 💎 Résumé : quelle stratégie choisir ?
 
-Stratégie	nopreempt	preempt_delay (ex: 300)
-Comportement	Pas de retour automatique. Le BACKUP reste MASTER.	Retour automatique après un délai.
-Avantage	Évite toute micro-coupure lors du retour du serveur principal.	Permet de vérifier la stabilité du serveur principal avant de lui redonner la main.
-Inconvénient	Le serveur principal reste inactif jusqu'à la prochaine panne du BACKUP.	Il y a tout de même une micro-coupure lors du retour (moins grave qu'une panne).
-Cas d'usage	Recommandé pour la plupart des sites web où la stabilité prime.	Utile si vous avez absolument besoin que le trafic retourne sur une machine plus puissante.
+| Stratégie | nopreempt | preempt_delay (ex: 300) |
+|:----------|:----------|:-------------------------|
+| **Comportement** | Pas de retour automatique. Le BACKUP reste MASTER. | Retour automatique après un délai. |
+| **Avantage** | Évite toute micro-coupure lors du retour du serveur principal. | Permet de vérifier la stabilité du serveur principal avant de lui redonner la main. |
+| **Inconvénient** | Le serveur principal reste inactif jusqu'à la prochaine panne du BACKUP. | Il y a tout de même une micro-coupure lors du retour (moins grave qu'une panne). |
+| **Cas d'usage** | Recommandé pour la plupart des sites web où la stabilité prime. | Utile si vous avez absolument besoin que le trafic retourne sur une machine plus puissante. |
 
+*** Les différents niveaux de "standby" ***
 
-Les différents niveaux de "standby"
-
-Niveau	État du serveur de secours	Temps de bascule	Exemple
-Cold standby	Éteint. À démarrer manuellement	Minutes à heures	Backup sur disque dur
-Warm standby	Allumé, mais services à lancer	Secondes à minutes	Keepalived sans services actifs
-Hot standby	Allumé, services prêts, mais sans trafic	Secondes	Keepalived + services tournant
-Active-Active	Les deux servent le trafic	Instantané	Load balancer (HAProxy)
+| Niveau | État du serveur de secours | Temps de bascule | Exemple |
+|:-------|:---------------------------|:-----------------|:--------|
+| **Cold standby** | Éteint. À démarrer manuellement | Minutes à heures | Backup sur disque dur |
+| **Warm standby** | Allumé, mais services à lancer | Secondes à minutes | Keepalived sans services actifs |
+| **Hot standby** | Allumé, services prêts, mais sans trafic | Secondes | Keepalived + services tournant |
+| **Active-Active** | Les deux servent le trafic | Instantané | Load balancer (HAProxy) |
 
 [⬆-up!](#proxmox-ve-tutorial)
