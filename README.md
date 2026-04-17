@@ -2,11 +2,11 @@
 
 - [Tutorial Proxmox VE](#tutorial-proxmox-ve)
   - [Installation](#installation)
-  - [Access to Proxmox via Browser:](#access-to-proxmox-via-browser)
-  - [To verify from Proxmox Shell:](#to-verify-from-proxmox-shell)
-  - [Create CT with LXC:](#create-ct-with-lxc)
-  - [Verify from pve node Shell:](#verify-from-pve-node-shell)
-  - [Update CT:](#update-ct)
+  - [Access to Proxmox via Browser](#access-to-proxmox-via-browser)
+  - [To verify from Proxmox Shell](#to-verify-from-proxmox-shell)
+  - [Create CT with LXC](#create-ct-with-lxc)
+  - [Verify from pve node Shell](#verify-from-pve-node-shell)
+  - [Update CT](#update-ct)
   - [Clone CT](#clone-ct)
   - [UFW firewall installation](#ufw-firewall-installation)
   - [SSH](#ssh)
@@ -27,13 +27,13 @@ If you get some trouble with installation during installation, you can access to
 
 ---
 
-## Access to Proxmox via Browser:
+## Access to Proxmox via Browser
 
 `https://192.168.xx.xx:8006`
 
 ---
 
-## To verify from Proxmox Shell:
+## To verify from Proxmox Shell
 
 1. Hard Disk:
 
@@ -61,7 +61,7 @@ If you get some trouble with installation during installation, you can access to
 
 ---
 
-## Create CT with LXC:
+## Create CT with LXC
 
 - install template => debian 12 (bookworm)
 
@@ -69,7 +69,7 @@ If you get some trouble with installation during installation, you can access to
 
 - CT 100 - pwd (& confirmed) - 1 CPU - 8 - 1024 RAM - 512 SWAP - DNS empty
 
-## Verify from pve node Shell:
+## Verify from pve node Shell
 
 `pct stop 100`
 
@@ -79,7 +79,7 @@ If you get some trouble with installation during installation, you can access to
 
 `pct enter 100`
 
-## Update CT:
+## Update CT
 
 `pct enter 100`
 
