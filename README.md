@@ -57,7 +57,7 @@ If you get some trouble with installation during installation, you can access to
 
 `pvesm status`
 
-[⬆](#tutorial-proxmox-ve)
+[⬆-up!](#tutorial-proxmox-ve)
 
 ---
 
