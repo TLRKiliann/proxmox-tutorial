@@ -1,5 +1,13 @@
 # Tutorial Proxmox VE
 
+- [Installation](#Installation)
+- [Create CT with LXC](#Create CT with LXC)
+- [Clone CT](#Clone CT)
+- [UFW firewall installation](#UFW firewall installation)
+- [SSH](#SSH)
+- [Add user](#Add user)
+- [hot standby for website](#hot standby for website)
+
 ## Installation
 
 I've choose Ventoy to flash my USB key with Proxmox ISO (last one).
@@ -79,7 +87,7 @@ If you get some trouble with installation during installation, you can access to
 
 ---
 
-## Clone
+## Clone CT
 
 Le conteneur doit être arrêté pour un clone cohérent (sinon le clone peut être dans un état inconsistants)
 
@@ -300,3 +308,162 @@ PermitRootLogin no
 ```
 
 `systemctl restart ssh`
+
+---
+
+##  hot standby for website
+
+No preemptive mode (website).
+
+Le remplacement à chaud (hot standby ou hot spare) désigne un scénario où :
+
+- Le serveur de secours est déjà allumé et prêt à prendre le relais immédiatement
+
+- Mais il ne reçoit pas de trafic en temps normal
+
+- Il peut avoir ses propres données synchronisées ou non
+
+Keepalived en mode non-préemptif correspond exactement à cette définition : le CT 101 tourne en arrière-plan, prêt à prendre la main, mais ne fait rien tant que le CT 100 fonctionne.
+
+1) Installer Keepalived sur les deux CT
+
+`apt update`
+
+`apt install keepalived -y`
+
+2) Configurer le CT 100 (MASTER)
+
+Créez le fichier `/etc/keepalived/keepalived.conf` :
+
+```
+vrrp_instance VI_1 {
+    state MASTER              # Rôle principal
+    interface eth0            # Votre interface réseau
+    virtual_router_id 51      # Identifiant unique (1-255)
+    priority 100              # Priorité plus haute que le BACKUP
+    advert_int 1              # Annonce toutes les secondes
+
+    authentication {
+        auth_type PASS
+        auth_pass MonMotDePasse  # À changer !
+    }
+
+    virtual_ipaddress {
+        192.168.0.99/24 dev eth0   # Votre VIP
+    }
+}
+```
+
+3) Configurer le CT 101 (BACKUP)
+
+```
+vrrp_instance VI_1 {
+    state BACKUP             # Rôle de secours
+    interface eth0
+    virtual_router_id 51     # ID IDENTIQUE au MASTER !
+    priority 90              # Plus bas que le MASTER
+    advert_int 1
+
+    authentication {
+        auth_type PASS
+        auth_pass MonMotDePasse   # IDENTIQUE au MASTER !
+    }
+
+    virtual_ipaddress {
+        192.168.0.99/24 dev eth0
+    }
+}
+```
+
+Points critiques : virtual_router_id et auth_pass doivent être strictement identiques sur les deux CT. La priorité détermine quel CT est actif par défaut.
+
+4) Démarrer et tester
+
+```
+# Sur les deux CT
+systemctl enable keepalived
+systemctl start keepalived
+
+# Vérifier que le MASTER a bien la VIP
+ip addr show eth0
+```
+
+Vous devriez voir l'IP virtuelle (192.168.0.99) sur le CT 100, mais pas sur le CT 101
+
+5) Tester la bascule
+
+```
+# Sur le CT 100 (MASTER)
+systemctl stop keepalived   # Simule une panne
+
+# Vérifier sur le CT 101
+ip addr show eth0           # La VIP doit apparaître ici maintenant
+```
+
+La bascule prend 1 à 3 secondes. Pour réactiver le MASTER, redémarrez Keepalived dessus : il reprendra automatiquement la VIP.
+
+### Pour aller plus loin : surveiller votre site web
+
+Actuellement, Keepalived surveille uniquement que le CT est vivant. Pour qu'il bascule si votre site web tombe (même si le CT tourne), ajoutez un script de vérification:
+
+- Créez `/etc/keepalived/check_website.sh` sur les deux CT :
+
+```
+bash
+
+#!/bin/bash
+# Teste si le site répond
+curl -f http://localhost/ || exit 1
+exit 0
+```
+
+- Rendez-le exécutable :
+
+```
+bash
+
+chmod +x /etc/keepalived/check_website.sh
+```
+
+- Ajoutez ces lignes DANS le bloc vrrp_instance de chaque configuration :
+
+```
+bash
+
+    track_script {
+        check_website
+    }
+```
+
+- Et avant le bloc vrrp_instance, ajoutez la définition du script :
+
+```
+bash
+
+vrrp_script check_website {
+    script "/etc/keepalived/check_website.sh"
+    interval 2      # Test toutes les 2 secondes
+    fall 2          # 2 échecs = KO
+    rise 2          # 2 succès = OK
+}
+```
+
+Ainsi, si votre serveur web plante, Keepalived basculera automatiquement sur l'autre CT.
+
+
+💎 Résumé : quelle stratégie choisir ?
+
+Stratégie	nopreempt	preempt_delay (ex: 300)
+Comportement	Pas de retour automatique. Le BACKUP reste MASTER.	Retour automatique après un délai.
+Avantage	Évite toute micro-coupure lors du retour du serveur principal.	Permet de vérifier la stabilité du serveur principal avant de lui redonner la main.
+Inconvénient	Le serveur principal reste inactif jusqu'à la prochaine panne du BACKUP.	Il y a tout de même une micro-coupure lors du retour (moins grave qu'une panne).
+Cas d'usage	Recommandé pour la plupart des sites web où la stabilité prime.	Utile si vous avez absolument besoin que le trafic retourne sur une machine plus puissante.
+
+
+Les différents niveaux de "standby"
+
+Niveau	État du serveur de secours	Temps de bascule	Exemple
+Cold standby	Éteint. À démarrer manuellement	Minutes à heures	Backup sur disque dur
+Warm standby	Allumé, mais services à lancer	Secondes à minutes	Keepalived sans services actifs
+Hot standby	Allumé, services prêts, mais sans trafic	Secondes	Keepalived + services tournant
+Active-Active	Les deux servent le trafic	Instantané	Load balancer (HAProxy)
