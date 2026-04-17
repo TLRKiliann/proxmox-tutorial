@@ -1,18 +1,17 @@
 # Tutorial Proxmox VE
 
-- [Tutorial Proxmox VE](#tutorial-proxmox-ve)
-  - [Installation](#installation)
-  - [Access to Proxmox via Browser:](#access-to-proxmox-via-browser)
-  - [To verify from Proxmox Shell:](#to-verify-from-proxmox-shell)
-  - [Create CT with LXC :](#create-ct-with-lxc-)
-  - [Verify from pve node Shell:](#verify-from-pve-node-shell)
-  - [Update CT:](#update-ct)
-  - [Clone CT](#clone-ct)
-  - [UFW firewall installation](#ufw-firewall-installation)
-  - [SSH](#ssh)
-  - [Add user ✅](#add-user-)
-  - [hot standby for website](#hot-standby-for-website)
-    - [Pour aller plus loin : surveiller votre site web](#pour-aller-plus-loin--surveiller-votre-site-web)
+[Installation](#installation)
+[Access to Proxmox via Browser:](#access-to-proxmox-via-browser-)
+[To verify from Proxmox Shell:](#to-verify-from-proxmox-shell-)
+[Create CT with LXC:](#create-ct-with-lxc-)
+[Verify from pve node Shell:](#verify-from-pve-node-shell-)
+[Update CT:](#update-ct-)
+[Clone CT](#clone-ct)
+[UFW firewall installation](#ufw-firewall-installation)
+[SSH](#ssh)
+[Add user ✅](#add-user-)
+[hot standby for website](#hot-standby-for-website)
+[Pour aller plus loin : surveiller votre site web](#pour-aller-plus-loin--surveiller-votre-site-web)
 
 ## Installation
 
@@ -57,9 +56,11 @@ If you get some trouble with installation during installation, you can access to
 
 `pvesm status`
 
+[UP](#tutorial-proxmox-ve)
+
 ---
 
-## Create CT with LXC :
+## Create CT with LXC:
 
 - install template => debian 12 (bookworm)
 
@@ -91,6 +92,8 @@ If you get some trouble with installation during installation, you can access to
 
 `pct reboot 100`
 
+[UP](#tutorial-proxmox-ve)
+
 ---
 
 ## Clone CT
@@ -104,6 +107,8 @@ Si le conteneur doit être utilisé en production de manière indépendante : pr
 `pct clone 101 102 --full 1`
 
 `pct clone 101 102 --hostname mon-nouveau-conteneur`
+
+[UP](#tutorial-proxmox-ve)
 
 ---
 
@@ -121,6 +126,8 @@ ufw allow 443/tcp  # HTTPS
 
 ufw enable
 ```
+
+[UP](#tutorial-proxmox-ve)
 
 ---
 
@@ -268,6 +275,9 @@ Votre machine personnelle
                     └─ pct enter 100 (accès root absolu)
 
 ```
+
+[UP](#tutorial-proxmox-ve)
+
 ---
 
 ## Add user ✅
@@ -314,6 +324,8 @@ PermitRootLogin no
 ```
 
 `systemctl restart ssh`
+
+[UP](#tutorial-proxmox-ve)
 
 ---
 
@@ -473,3 +485,5 @@ Cold standby	Éteint. À démarrer manuellement	Minutes à heures	Backup sur dis
 Warm standby	Allumé, mais services à lancer	Secondes à minutes	Keepalived sans services actifs
 Hot standby	Allumé, services prêts, mais sans trafic	Secondes	Keepalived + services tournant
 Active-Active	Les deux servent le trafic	Instantané	Load balancer (HAProxy)
+
+[UP](#tutorial-proxmox-ve)
