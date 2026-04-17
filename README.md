@@ -1,17 +1,18 @@
 # Tutorial Proxmox VE
 
-[Installation](#installation)
-[Access to Proxmox via Browser:](#access-to-proxmox-via-browser-)
-[To verify from Proxmox Shell:](#to-verify-from-proxmox-shell-)
-[Create CT with LXC:](#create-ct-with-lxc-)
-[Verify from pve node Shell:](#verify-from-pve-node-shell-)
-[Update CT:](#update-ct-)
-[Clone CT](#clone-ct)
-[UFW firewall installation](#ufw-firewall-installation)
-[SSH](#ssh)
-[Add user ✅](#add-user-)
-[hot standby for website](#hot-standby-for-website)
-[Pour aller plus loin : surveiller votre site web](#pour-aller-plus-loin--surveiller-votre-site-web)
+- [Tutorial Proxmox VE](#tutorial-proxmox-ve)
+  - [Installation](#installation)
+  - [Access to Proxmox via Browser:](#access-to-proxmox-via-browser)
+  - [To verify from Proxmox Shell:](#to-verify-from-proxmox-shell)
+  - [Create CT with LXC:](#create-ct-with-lxc)
+  - [Verify from pve node Shell:](#verify-from-pve-node-shell)
+  - [Update CT:](#update-ct)
+  - [Clone CT](#clone-ct)
+  - [UFW firewall installation](#ufw-firewall-installation)
+  - [SSH](#ssh)
+  - [Add user ✅](#add-user-)
+  - [hot standby for website](#hot-standby-for-website)
+    - [Pour aller plus loin : surveiller votre site web](#pour-aller-plus-loin--surveiller-votre-site-web)
 
 ## Installation
 
