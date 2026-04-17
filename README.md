@@ -1,6 +1,6 @@
-# Tutorial Proxmox VE
+# Proxmox VE Tutorial
 
-- [Tutorial Proxmox VE](#tutorial-proxmox-ve)
+- [Proxmox VE Tutorial](#proxmox-ve-tutorial)
   - [Installation](#installation)
   - [Access to Proxmox via Browser](#access-to-proxmox-via-browser)
   - [To verify from Proxmox Shell](#to-verify-from-proxmox-shell)
@@ -57,7 +57,7 @@ If you get some trouble with installation during installation, you can access to
 
 `pvesm status`
 
-[⬆-up!](#tutorial-proxmox-ve)
+[⬆-up!](#proxmox-ve-tutorial)
 
 ---
 
@@ -93,7 +93,7 @@ If you get some trouble with installation during installation, you can access to
 
 `pct reboot 100`
 
-[⬆-up!](#tutorial-proxmox-ve)
+[⬆-up!](#proxmox-ve-tutorial)
 
 ---
 
@@ -109,7 +109,7 @@ Si le conteneur doit être utilisé en production de manière indépendante : pr
 
 `pct clone 101 102 --hostname mon-nouveau-conteneur`
 
-[⬆-up!](#tutorial-proxmox-ve)
+[⬆-up!](#proxmox-ve-tutorial)
 
 ---
 
@@ -128,7 +128,7 @@ ufw allow 443/tcp  # HTTPS
 ufw enable
 ```
 
-[⬆-up!](#tutorial-proxmox-ve)
+[⬆-up!](#proxmox-ve-tutorial)
 
 ---
 
@@ -277,7 +277,7 @@ Votre machine personnelle
 
 ```
 
-[⬆-up!](#tutorial-proxmox-ve)
+[⬆-up!](#proxmox-ve-tutorial)
 
 ---
 
@@ -326,7 +326,7 @@ PermitRootLogin no
 
 `systemctl restart ssh`
 
-[⬆-up!](#tutorial-proxmox-ve)
+[⬆-up!](#proxmox-ve-tutorial)
 
 ---
 
@@ -487,4 +487,4 @@ Warm standby	Allumé, mais services à lancer	Secondes à minutes	Keepalived san
 Hot standby	Allumé, services prêts, mais sans trafic	Secondes	Keepalived + services tournant
 Active-Active	Les deux servent le trafic	Instantané	Load balancer (HAProxy)
 
-[⬆-up!](#tutorial-proxmox-ve)
+[⬆-up!](#proxmox-ve-tutorial)
