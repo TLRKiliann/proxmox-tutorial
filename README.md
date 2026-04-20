@@ -9,7 +9,7 @@
   - [Verify from pve node Shell](#verify-from-pve-node-shell)
   - [Update CT](#update-ct)
   - [Clone CT](#clone-ct)
-  - [UFW firewall installation](#ufw-firewall-installation)
+  - [Firewall installation](#firewall-installation)
   - [SSH](#ssh)
   - [Add user ✅](#add-user-)
   - [hot standby for website](#hot-standby-for-website)
@@ -200,25 +200,57 @@ Si le conteneur doit être utilisé en production de manière indépendante : pr
 
 ---
 
-## UFW firewall installation
+## Firewall installation
+
+Database -> firewall -> options -> firewall (edit) -> yes
+pve -> firewall -> options -> firewall (edit) -> yes
+ct-100 -> firewall -> options -> firewall (edit) -> yes
+       -> network -> firewall = yes
+
+*** To verify ***
+
+For datacenter:
+
+`cat /etc/pve/firewall/cluster.fw`
 
 ```
-apt install ufw -y 
-
-ufw default deny incoming
-ufw default allow outgoing
-
-ufw allow 22/tcp   # SSH
-ufw allow 80/tcp   # HTTP
-ufw allow 443/tcp  # HTTPS
-
-ufw enable
-
-ufw status verbose
+enable: 1
 ```
+
+For pve:
+
+`pve-firewall status`
+
+```
+Status: enabled/running
+```
+
+For CT-100 LXC:
+
+`cat /etc/pve/lxc/100.config`
+
+```
+...firewall=1...
+```
+
+OR
+
+`cat /etc/pve/firewall/100.fw`
+
+```
+enable: 1
+```
+
+Verify:
+
+`systemctl status proxmox-firewall`
+
+Display rule set:
+
+`iptables-save`
 
 [⬆-up!](#proxmox-ve-tutorial)
-
+ 
 ---
 
 ## SSH
