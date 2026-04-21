@@ -249,6 +249,28 @@ Display rule set:
 
 `iptables-save`
 
+***To change rule for a CT***
+
+1) Enter:
+
+`cat >> /etc/pve/firewall/100.fw << EOF`
+
+2) Write line per line:
+
+```
+> [RULES]
+> IN ACCEPT -p tcp -dport 3000 -log nolog
+> EOF
+```
+
+3) Restart firewall:
+
+`pve-firewall restart`
+
+4) Verify:
+
+`cat /etc/pve/firewall/100.fw`
+
 [⬆-up!](#proxmox-ve-tutorial)
  
 ---
@@ -283,7 +305,7 @@ Your terminal
 
 `pct push 100 ~/.ssh/id_ed25519.pub /root/.ssh/authorized_keys`
 
-If failed:
+If it's failed:
 
 `pct enter 100`
 
@@ -320,13 +342,11 @@ ChallengeResponseAuthentication no
 
 normaly enable
 
-2) Sortez du conteneur (Ctrl+D ou "exit")
+2) Exit of CT (Ctrl+D ou "exit")
 
-Puis depuis l'hôte Proxmox :
+From host (pve) :
 
 `pct push 100 /root/.ssh/id_rsa.pub /root/.ssh/authorized_keys`
-
-- Depuis votre machine personnelle ou l'hôte Proxmox
 
 `ssh root@IP_DU_CONTENEUR_100`
 
