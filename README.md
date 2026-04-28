@@ -40,6 +40,8 @@ If you get some trouble with installation during installation, you can access to
 
 `$ lsblk`
 
+To display memory space:
+
 `$ df -h /`
 
 2. Voir toutes les interfaces réseau
@@ -121,23 +123,35 @@ En résumé : VM = isolation et compatibilité OS / CT = légèreté et performa
 
 `pct start 100`
 
+To display status of a CT:
+
 `pct status 100`
+
+To list all CT:
 
 `pct list`
 
+To enter into CT:
+
 `pct enter 100`
 
+To reboot CT:
+
 `pct reboot 100`
+
+To eliminate CT:
+
+`pct destroy 100`
 
 ## Update CT
 
 `pct enter 100`
 
-ip
+To display ip of a CT:
 
 `pct exec 100 -- ip a`
 
-update
+Tp update a CT:
 
 `pct exec 100 -- apt update`
 
