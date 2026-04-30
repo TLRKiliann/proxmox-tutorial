@@ -3,7 +3,7 @@
 - [Proxmox VE Tutorial](#proxmox-ve-tutorial)
   - [Installation](#installation)
   - [Access to Proxmox via Browser](#access-to-proxmox-via-browser)
-  - [To verify from Proxmox Shell](#to-verify-from-proxmox-shell)
+  - [To verify from Proxmox Shell (PVE)](#to-verify-from-proxmox-shell-pve)
   - [VM or CT ?](#vm-or-ct-)
   - [Create CT with LXC](#create-ct-with-lxc)
   - [Verify from pve node Shell](#verify-from-pve-node-shell)
@@ -34,7 +34,7 @@ If you get some trouble with installation during installation, you can access to
 
 ---
 
-## To verify from Proxmox Shell
+## To verify from Proxmox Shell (PVE)
 
 1. Hard Disk:
 
@@ -63,6 +63,10 @@ To display memory space:
 6. Lister tous les stockages configurés
 
 `pvesm status`
+
+7. Démarrer une application qui se trouve dans le CT-100
+
+`pct exec 100 -- bash -c "cd /home/user/mon_app && node app.js"`
 
 [⬆-up!](#proxmox-ve-tutorial)
 
