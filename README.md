@@ -83,6 +83,11 @@ et ajouter cette ligne:
 
 ## VM or CT ?
 
+VM et CTX peuvent communiquer directement grâce au bridge: `vmbr0`
+
+Si ils sont différents, il faut faire un port-forward et routage adapté. 
+
+
 Quand utiliser une VM ?
 
     Besoin d’exécuter Windows ou un autre OS non Linux.
