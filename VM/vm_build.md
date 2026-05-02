@@ -1,4 +1,4 @@
-# VM installation & CMD
+# VM installation and CMD
 
 ## Download ISO image (Debian)
 
@@ -54,7 +54,7 @@ File name
 8)  Confirm
 
 
-[⬆-up](#vm-installation-&-cmd)
+[⬆-up](#vm-installation-and-cmd)
 
 
 ## Start VM
@@ -96,11 +96,16 @@ Into your VM
 `sudo systemctl enable qemu-guest-agent --now`
 
 
-[⬆-up](#vm-installation-&-cmd)
+[⬆-up](#vm-installation-and-cmd)
 
 
 ## From pve node Shell
 
+Help
+
+`qm help <CMD>`
+
+`qm help set`
 
 List all VM
 
