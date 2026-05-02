@@ -1,4 +1,6 @@
-# VM installation & CMD
+# VM installation and CMD
+
+Installation with a Debian ISO image.
 
 ## Download ISO image (Debian)
 
@@ -34,23 +36,28 @@ File name
     TPM (yes but only for Windows)
 
 4) Disks
+
     Select 32 GB
     Select discard (fstrim auto-cleaner for cache every week)
 
 5) CPU
+   
     1 socket
     2 cores (or 4)
 
 6) Memory
+
     4096 MiB
 
 7) Network
+
     Nothing
 
 8)  Confirm
 
 
-[⬆-up](#vm-installation-&-cmd)
+[⬆-up](#vm-installation-and-cmd)
+
 
 ## Start VM
 
@@ -91,9 +98,16 @@ Into your VM
 `sudo systemctl enable qemu-guest-agent --now`
 
 
-[⬆-up](#vm-installation-&-cmd)
+[⬆-up](#vm-installation-and-cmd)
 
-# CMD for VM
+
+## From pve node Shell
+
+Help
+
+`qm help <CMD>`
+
+`qm help set`
 
 List all VM
 
@@ -166,4 +180,4 @@ Stop (not recommanded, as a last resort)
 `qm stop <VM_ID>`
 
 
-[⬆-up](#vm-installation-&-cmd)
+[⬆-up](#vm-installation-and-cmd)

@@ -1,4 +1,4 @@
-# Create CT with LXC & CMD
+# Create CT with LXC and CMD
 
 | **Utilisez un CT si...** | **Utilisez une VM si...** |
 |:--------------------------|:---------------------------|
@@ -19,7 +19,13 @@
 
 - CT 100 - pwd (& confirmed) - 1 CPU - 8 - 1024 RAM - 512 SWAP - DNS empty
 
-## Verify from pve node Shell
+## From pve node Shell
+
+Help
+
+`pct help <CMD>`
+
+`pct help set`
 
 List all CTX
 
@@ -113,7 +119,7 @@ with cron
 `crontab -l`
 
 
-[⬆-up!](#create-ct-with-lxc-&-cmd)
+[⬆-up!](#create-ct-with-lxc-and-cmd)
 
 ---
 
@@ -130,7 +136,7 @@ Si le conteneur doit être utilisé en production de manière indépendante : pr
 `pct clone 101 102 --hostname my-new-conteneur`
 
 
-[⬆-up!](#create-ct-with-lxc-&-cmd)
+[⬆-up!](#create-ct-with-lxc-and-cmd)
 
 ---
 
@@ -206,4 +212,11 @@ Display rule set
 `cat /etc/pve/firewall/<CT-ID>.fw`
 
 
-[⬆-up!](#create-ct-with-lxc-&-cmd) 
+[⬆-up!](#create-ct-with-lxc-and-cmd)
+
+
+## Docker
+
+For Docker installation
+
+`pct set <CTID> --features <option>=1`
