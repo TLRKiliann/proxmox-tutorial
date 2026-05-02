@@ -19,7 +19,13 @@
 
 - CT 100 - pwd (& confirmed) - 1 CPU - 8 - 1024 RAM - 512 SWAP - DNS empty
 
-## Verify from pve node Shell
+## From pve node Shell
+
+Help
+
+`pct help <CMD>`
+
+`pct help set`
 
 List all CTX
 

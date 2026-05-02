@@ -34,23 +34,28 @@ File name
     TPM (yes but only for Windows)
 
 4) Disks
+
     Select 32 GB
     Select discard (fstrim auto-cleaner for cache every week)
 
 5) CPU
+   
     1 socket
     2 cores (or 4)
 
 6) Memory
+
     4096 MiB
 
 7) Network
+
     Nothing
 
 8)  Confirm
 
 
 [⬆-up](#vm-installation-&-cmd)
+
 
 ## Start VM
 
@@ -93,7 +98,9 @@ Into your VM
 
 [⬆-up](#vm-installation-&-cmd)
 
-# CMD for VM
+
+## From pve node Shell
+
 
 List all VM
 
