@@ -1,5 +1,7 @@
 # VM installation and CMD
 
+Installation with a Debian ISO image.
+
 ## Download ISO image (Debian)
 
 Click on => local (pve) => ISO images
@@ -178,4 +180,4 @@ Stop (not recommanded, as a last resort)
 `qm stop <VM_ID>`
 
 
-[⬆-up](#vm-installation-&-cmd)
+[⬆-up](#vm-installation-and-cmd)
