@@ -5,11 +5,6 @@
   - [Access to Proxmox via Browser](#access-to-proxmox-via-browser)
   - [To verify from Proxmox Shell (PVE)](#to-verify-from-proxmox-shell-pve)
   - [VM or CT ?](#vm-or-ct-)
-  - [Create CT with LXC](#create-ct-with-lxc)
-  - [Verify from pve node Shell](#verify-from-pve-node-shell)
-  - [Update CT](#update-ct)
-  - [Clone CT](#clone-ct)
-  - [Firewall installation](#firewall-installation)
   - [SSH](#ssh)
   - [Add user ✅](#add-user-)
   - [hot standby for website](#hot-standby-for-website)
@@ -19,12 +14,14 @@
 
 I've choose Ventoy to flash my USB key with Proxmox ISO (last one).
 
-If you get some trouble with installation during installation, you can access to GRUB by pressing key "e" to add `nomodeset` at the end of linux line.
+If you're in trouble with installation during installation, you can access to GRUB by pressing key "e" to add `nomodeset` at the end of linux line.
 
 (options -> target disk)
 
 - RAID0 => ZFS (I've got only one Hard Disk)
 - RAID1 => ZFS (2 Hard Disks)
+
+At the end of installation, when screen is black, remove the USB key.
 
 ---
 
@@ -111,207 +108,6 @@ Quand utiliser un CT (conteneur LXC) ?
 En résumé : VM = isolation et compatibilité OS / CT = légèreté et performance Linux.
 
 [⬆-up!](#proxmox-ve-tutorial)
-
-## Create CT with LXC
-
-| **Utilisez un CT si...** | **Utilisez une VM si...** |
-|:--------------------------|:---------------------------|
-| Vous voulez un service **léger** qui démarre en quelques secondes. | Vous avez besoin d'**isolation** et de sécurité maximale (ex: serveur exposé sur internet). |
-| Vous voulez héberger une **application unique** (Pi-hole, Jellyfin, un serveur web). | Vous voulez utiliser un **autre noyau** (ex: un noyau custom ou un OS comme Windows ou FreeBSD). |
-| Vous avez des **ressources limitées** (mémoire, CPU) et voulez en utiliser le moins possible. | Vous voulez **passer du matériel** (GPU, clé USB) simplement et de manière fiable. |
-| Vous voulez **tester** une application rapidement et pouvoir la supprimer ou la cloner facilement. | Vous voulez déployer des environnements **Docker complexes** (préférez une VM Debian/Ubuntu dédiée). |
-
-- Pas de live-migration : Contrairement aux VMs, un CT ne peut pas être migré "à chaud" (sans l'éteindre) vers un autre nœud d'un cluster Proxmox.
-
-- Périphériques matériels : Passer du matériel spécifique (comme une clé USB ou une carte GPU) à un CT est plus complexe que pour une VM et nécessite souvent une configuration manuelle avancée (passerelle de périphériques)
-
-*** CT LXC: ***
-
-- install template => debian 12 (bookworm)
-
-- Click pve -> Create CT -> configuration
-
-- CT 100 - pwd (& confirmed) - 1 CPU - 8 - 1024 RAM - 512 SWAP - DNS empty
-
-## Verify from pve node Shell
-
-`pct stop 100`
-
-`pct start 100`
-
-To display status of a CT:
-
-`pct status 100`
-
-To list all CT:
-
-`pct list`
-
-To enter into CT:
-
-`pct enter 100`
-
-To reboot CT:
-
-`pct reboot 100`
-
-To eliminate CT:
-
-`pct destroy 100`
-
-## Update CT
-
-`pct enter 100`
-
-To display ip of a CT:
-
-`pct exec 100 -- ip a`
-
-To show port of CT:
-
-`pct exec 100 -- ss -tlnp`
-
-Increase RAM:
-
-`pct set 100 -memory 4096`
-
-To update a CT:
-
-`pct exec 100 -- apt update`
-
-`pct exec 100 -- bash -c "apt update && apt upgrade -y"`
-
-`pct exec 100 -- bash -c "apt update && apt upgrade -y && apt autoremove -y"`
-
-⚠️ Don't use dist-upgrade ⚠️
-
-`pct reboot 100`
-
-⚠️ Don't use reboot into a CT ⚠️
-
-Mises à jour automatisées : Un script (proxmox-ct-updater) peut gérer les mises à jour de tous vos CT selon un planning (par exemple, tous les 1ers du mois), en générant des logs détaillés .
-
-`proxmox-ct-updater`
-
-```
-sudo install -m 755 scripts/proxmox-ct-update.sh /usr/local/sbin/proxmox-ct-update.sh
-sudo /usr/local/sbin/proxmox-ct-update.sh
-```
-
-Vous pouvez relancer l'assistant à tout moment pour modifier les paramètres cron :
-
-`sudo /usr/local/sbin/proxmox-ct-update.sh --configure`
-
-Ou réinstaller la planification sans repasser par l'assistant :
-
-`sudo /usr/local/sbin/proxmox-ct-update.sh --install`
-
-`cat /etc/cron.d/proxmox-ct-update`
-
-return
-
-`0 2 1 * * root /usr/local/sbin/proxmox-ct-update.sh`
-
-with cron
-
-`bash -c "$(wget -qLO - https://github.com/community-scripts/ProxmoxVE/raw/main/tools/pve/update-lxcs-cron.sh)"`
-
-`crontab -l`
-
-[⬆-up!](#proxmox-ve-tutorial)
-
----
-
-## Clone CT
-
-Le conteneur doit être arrêté pour un clone cohérent (sinon le clone peut être dans un état inconsistants)
-
-`pct clone 101 102`
-
-Si le conteneur doit être utilisé en production de manière indépendante : préférez pct clone --full 1 pour éviter toute dépendance avec l'original
-
-`pct clone 101 102 --full 1`
-
-`pct clone 101 102 --hostname mon-nouveau-conteneur`
-
-[⬆-up!](#proxmox-ve-tutorial)
-
----
-
-## Firewall installation
-
-Database -> firewall -> options -> firewall (edit) -> yes
-pve -> firewall -> options -> firewall (edit) -> yes
-ct-100 -> firewall -> options -> firewall (edit) -> yes
-       -> network -> firewall = yes
-
-*** To verify ***
-
-For datacenter:
-
-`cat /etc/pve/firewall/cluster.fw`
-
-```
-enable: 1
-```
-
-For pve:
-
-`pve-firewall status`
-
-```
-Status: enabled/running
-```
-
-For CT-100 LXC:
-
-`cat /etc/pve/lxc/100.config`
-
-```
-...firewall=1...
-```
-
-OR
-
-`cat /etc/pve/firewall/100.fw`
-
-```
-enable: 1
-```
-
-Verify:
-
-`systemctl status proxmox-firewall`
-
-Display rule set:
-
-`iptables-save`
-
-***To change rule for a CT***
-
-1) Enter:
-
-`cat >> /etc/pve/firewall/100.fw << EOF`
-
-2) Write line per line:
-
-```
-> [RULES]
-> IN ACCEPT -p tcp -dport 3000 -log nolog
-> EOF
-```
-
-3) Restart firewall:
-
-`pve-firewall restart`
-
-4) Verify:
-
-`cat /etc/pve/firewall/100.fw`
-
-[⬆-up!](#proxmox-ve-tutorial)
- 
----
 
 ## SSH
 
@@ -468,36 +264,36 @@ Votre machine personnelle
 
 `pct enter 100`
 
-1) Créer un utilisateur (ex: monuser)
+1) Créer un utilisateur (ex: my_usr_name)
 
-`adduser monuser`
+`adduser my_usr_name`
 
 2) Ajouter aux sudoers
 
-`usermod -aG sudo monuser  # Pour Debian/Ubuntu`
+`usermod -aG sudo my_usr_name  # Pour Debian/Ubuntu`
 
 or
 
-`usermod -aG wheel monuser  # Pour certaines distributions`
+`usermod -aG wheel my_usr_name  # Pour certaines distributions`
 
 
 3) From pve node shell:
 
-`pct push 100 /root/.ssh/id_rsa.pub /home/monuser/.ssh/authorized_keys`
+`pct push 100 /root/.ssh/id_rsa.pub /home/my_usr_name/.ssh/authorized_keys`
 
 Ou depuis l'intérieur du CT
 
 `pct enter 100`
 
-`mkdir -p /home/monuser/.ssh`
+`mkdir -p /home/my_usr_name/.ssh`
 
-`cat /root/.ssh/authorized_keys >> /home/monuser/.ssh/authorized_keys`
+`cat /root/.ssh/authorized_keys >> /home/my_usr_name/.ssh/authorized_keys`
 
-`chown -R monuser:monuser /home/monuser/.ssh`
+`chown -R my_usr_name:my_usr_name /home/my_usr_name/.ssh`
 
-`chmod 600 /home/monuser/.ssh/authorized_keys`
+`chmod 600 /home/my_usr_name/.ssh/authorized_keys`
 
-`ssh monuser@192.168.XX.XX`
+`ssh my_usr_name@192.168.XX.XX`
 
 Deactivate ssh root:
 
