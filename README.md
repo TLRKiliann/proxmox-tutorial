@@ -23,19 +23,19 @@
 
 4) Into the GRUB of Proxmox VE
 
-If you're in trouble during installation, you can access to GRUB by pressing key "e" to add `nomodeset` at the end of linux line.
+- If you're in trouble during installation, you can access to GRUB by pressing key "e" to add `nomodeset` at the end of linux line.
 
-options -> target disk
+- **options -> target disk**
 
 - ext4  => basically
 - RAID0 => ZFS (I've got only one Hard Disk)
 - RAID1 => ZFS (2 Hard Disks)
 
-I've choosen RAID0, because there is the best for performances.
+- I've choosen RAID0, because there is the best for performances.
 
-On your router you can choose xx.xx.xx.xx to xx.xx.xx.200 and choose to fix the ip to xx.xx.xx.201. It will be a static IP.
+- On your router you can choose xx.xx.xx.xx to xx.xx.xx.200 and choose to fix the ip to xx.xx.xx.201. It will be a static IP.
 
-After installation, remove the USB key before to click restart !
+- After installation, remove the USB key before to click restart !
 
 ---
 
@@ -48,7 +48,9 @@ At this page you can copy script:
 
 https://community-scripts.org/categories?category=proxmox-and-virtualization&preview=post-pve-install
 
-`bash -c "$(curl -fsSL https://raw.githubusercontent.com/community-scripts/ProxmoxVE/main/tools/pve/post-pve-install.sh)"`
+```
+bash -c "$(curl -fsSL https://raw.githubusercontent.com/community-scripts/ProxmoxVE/main/tools/pve/post-pve-install.sh)"
+```
 
 copy that and paste it into the shell of pve, then click always yes.
 
