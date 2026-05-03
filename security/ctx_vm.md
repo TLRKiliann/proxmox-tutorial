@@ -1,5 +1,12 @@
 # CTX or VM
 
+- CTX is linked to the pve
+
+- VM is not linked to the pve
+
+Warning with update with template !
+
+
 Exécution de code non fiable : Si vous téléchargez des fichiers depuis Internet (ex: via un client Torrent), une VM isole totalement ce risque du système Proxmox
 
 Tests de sécurité : Pour analyser des malwares ou faire du "reverse engineering", la VM est indispensable. Un CTX partage le noyau de l'hôte, ce qui représente un risque majeur
