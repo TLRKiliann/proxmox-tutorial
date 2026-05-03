@@ -1,5 +1,7 @@
 # VM installation and CMD
 
+**It's not linked to pve**
+
 Installation with a Debian ISO image.
 
 ## Download ISO image (Debian)
