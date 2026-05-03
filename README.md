@@ -11,19 +11,17 @@
 
 ## Installation
 
-I've choose Ventoy to flash my USB key with Proxmox ISO (last one version).
+1) Choose Ventoy to flash a USB key with Proxmox ISO (last one version).
 
-Start your server and press key : delete or F2 or F10 or F12.
+2) Start your server and press key : delete or F2 or F10 or F12.
 
-Into the BOOT menu
+3) Into the BOOT menu
 
-CPU => Advanced => virtualization enable (VMX or VT-x).
+- CPU => Advanced => virtualization enable (VMX or VT-x).
+- Choose your USB device on first option to boot.
+- Save changes and reset.
 
-Choose your USB device on first option to boot.
-
-Save changes and reset.
-
-Into the GRUB of Proxmox VE
+4) Into the GRUB of Proxmox VE
 
 If you're in trouble during installation, you can access to GRUB by pressing key "e" to add `nomodeset` at the end of linux line.
 
@@ -33,9 +31,9 @@ options -> target disk
 - RAID0 => ZFS (I've got only one Hard Disk)
 - RAID1 => ZFS (2 Hard Disks)
 
-On your router you can choose xx.xx.xx.xx to xx.xx.xx.200 and choose to fix the ip to xx.xx.xx.201. It will be a static IP.
-
 I've choosen RAID0, because there is the best for performances.
+
+On your router you can choose xx.xx.xx.xx to xx.xx.xx.200 and choose to fix the ip to xx.xx.xx.201. It will be a static IP.
 
 After installation, remove the USB key before to click restart !
 
