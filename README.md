@@ -11,22 +11,58 @@
 
 ## Installation
 
-I've choose Ventoy to flash my USB key with Proxmox ISO (last one).
+I've choose Ventoy to flash my USB key with Proxmox ISO (last one version).
 
-If you're in trouble with installation during installation, you can access to GRUB by pressing key "e" to add `nomodeset` at the end of linux line.
+Start your server and press key : delete or F2 or F10 or F12.
 
-(options -> target disk)
+Into the BOOT menu
 
+CPU => Advanced => virtualization enable (VMX or VT-x).
+
+Choose your USB device on first option to boot.
+
+Save changes and reset.
+
+Into the GRUB of Proxmox VE
+
+If you're in trouble during installation, you can access to GRUB by pressing key "e" to add `nomodeset` at the end of linux line.
+
+options -> target disk
+
+- ext4  => basically
 - RAID0 => ZFS (I've got only one Hard Disk)
 - RAID1 => ZFS (2 Hard Disks)
 
-At the end of installation, when screen is black, remove the USB key.
+On your router you can choose xx.xx.xx.xx to xx.xx.xx.200 and choose to fix the ip to xx.xx.xx.201. It will be a static IP.
+
+I've choosen RAID0, because there is the best for performances.
+
+After installation, remove the USB key before to click restart !
 
 ---
 
 ## Access to Proxmox via Browser
 
 `https://192.168.xx.xx:8006`
+
+
+At this page you can copy script:
+
+https://community-scripts.org/categories?category=proxmox-and-virtualization&preview=post-pve-install
+
+`bash -c "$(curl -fsSL https://raw.githubusercontent.com/community-scripts/ProxmoxVE/main/tools/pve/post-pve-install.sh)"`
+
+copy that and paste it into the shell of pve, then click always yes.
+
+After that, go to pve => updates => repository 
+
+Disable Entreprise & click on `no-subscription` and `ceph squid no-subscription` to replace disable components and create new one.
+
+Then return, to click on updates => refresh
+
+At the end, click on upgrades and press y for yes
+
+reboot
 
 ---
 
