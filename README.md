@@ -33,9 +33,9 @@ options -> target disk
 - RAID0 => ZFS (I've got only one Hard Disk)
 - RAID1 => ZFS (2 Hard Disks)
 
-On your router you can choose xx.xx.xx.xx to xx.xx.xx.200 and choose to fix the ip to xx.xx.xx.201. It will be a static IP.
-
 I've choosen RAID0, because there is the best for performances.
+
+On your router you can choose xx.xx.xx.xx to xx.xx.xx.200 and choose to fix the ip to xx.xx.xx.201. It will be a static IP.
 
 After installation, remove the USB key before to click restart !
 
