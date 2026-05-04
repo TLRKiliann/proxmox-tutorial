@@ -6,9 +6,7 @@ Installation with a Debian ISO image.
 
 ## Download ISO image (Debian)
 
-Click on => local (pve) => ISO images
-
-Downnload from URL
+Click on => local (pve) => ISO images => Download from URL
 
 `https://debian.ethz.ch/debian-cd/current/amd64/iso-cd/debian-13.4.0-amd64-netinst.iso`
 
@@ -30,24 +28,28 @@ File name
 
 2) OS
     
-    Choose the ISO image
+    Choose the ISO image `debian-13.4.0-amd64-netinst.iso`
 
 3) System
     
-    Choose Qemu agent
-    TPM (yes but only for Windows)
+    Check Qemu agent
+    TPM (check only for Windows)
 
 4) Disks
 
-    Select 32 GB
-    Select discard (fstrim auto-cleaner for cache every week)
+    Select 32 GB (min required is 25GB)
+    Check discard (fstrim auto-cleaner for cache every week)
 
 5) CPU
    
     1 socket
     2 cores (or 4)
+    Type: host
+
 
 6) Memory
+
+    max: 8192 MiB - min: 2048 MiB
 
     4096 MiB
 
@@ -183,3 +185,20 @@ Stop (not recommanded, as a last resort)
 
 
 [⬆-up](#vm-installation-and-cmd)
+
+
+---
+
+Ubuntu 24.04 Desktop LTS (AMD 64-bit)
+
+4 cores
+
+---
+
+Windows 11 Pro ISO
+
+Windows page
+
+local (pve) => ISO images => upload
+
+Windows VirtIO drivers
