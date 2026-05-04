@@ -48,13 +48,44 @@ At this page you can copy script:
 
 https://community-scripts.org/categories?category=proxmox-and-virtualization&preview=post-pve-install
 
+copy paste to your shell of pve
+
 ```
-bash -c "$(curl -fsSL https://raw.githubusercontent.com/community-scripts/ProxmoxVE/main/tools/pve/post-pve-install.sh)"
+curl -fsSL https://raw.githubusercontent.com/community-scripts/ProxmoxVE/main/tools/pve/post-pve-install.sh -o post-install.sh
 ```
 
-copy that and paste it into the shell of pve, then click always yes.
+If the command `ping -c 2 github.com` returns "unknown host," the problem is with your DNS. Your DNS server is likely pointing to 127.0.0.1
 
-After that, go to pve => updates => repository 
+Copy paste into the shell of pve
+
+```
+echo "nameserver 8.8.8.8" > /etc/resolv.conf
+echo "nameserver 1.1.1.1" >> /etc/resolv.conf
+```
+
+and retry
+
+```
+curl -fsSL https://raw.githubusercontent.com/community-scripts/ProxmoxVE/main/tools/pve/post-pve-install.sh -o post-install.sh
+```
+
+`chmod +x post-install.sh`
+
+`./post-install.sh`
+
+then click always `yes`
+
+reboot you pve
+
+`reboot`
+
+and clear your browser's cache !
+
+You can verify your nameserver
+
+`cat /etc/resolv.conf`
+
+After that, go to GUI => pve => updates => repository 
 
 Disable Entreprise & click on `no-subscription` and `ceph squid no-subscription` to replace disable components and create new one.
 
@@ -62,7 +93,7 @@ Then return, to click on updates => refresh
 
 At the end, click on upgrades and press y for yes
 
-reboot
+reboot your pve
 
 ---
 
