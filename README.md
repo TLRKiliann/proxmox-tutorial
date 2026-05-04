@@ -93,7 +93,9 @@ Then return, to click on updates => refresh
 
 At the end, click on upgrades and press y for yes
 
-reboot your pve
+reboot your pve !
+
+[⬆-up!](#proxmox-ve-tutorial)
 
 ---
 
