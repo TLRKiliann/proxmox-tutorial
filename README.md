@@ -95,6 +95,19 @@ At the end, click on upgrades and press y for yes
 
 reboot your pve !
 
+apt install lm-sensors
+
+Look at to GUI Ressources
+
+
+
+`ethtool enpXX`
+
+```
+Speed: 1000 Mb/s
+Duplex: Full
+```
+
 [⬆-up!](#proxmox-ve-tutorial)
 
 ---
