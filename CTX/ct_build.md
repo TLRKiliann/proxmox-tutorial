@@ -1,6 +1,6 @@
 # Create CT with LXC and CMD 
 
-**It's linked to the pve**
+⚠️ It's linked to the pve ⚠️
 
 | **Utilisez un CT si...** | **Utilisez une VM si...** |
 |:--------------------------|:---------------------------|
